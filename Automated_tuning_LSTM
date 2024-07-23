@@ -1,0 +1,81 @@
+limport pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+import keras_tuner as kt
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+import tensorflow as tf
+
+# Load your dataset
+df = pd.read_csv('your_dataset.csv')  # replace with your actual data source
+
+# Separate input and output columns
+X = df.iloc[:, :23]  # first 23 columns are inputs
+y = df.iloc[:, 23:38]  # next 15 columns are outputs
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Standardize the data
+scaler_X = StandardScaler()
+X_train = scaler_X.fit_transform(X_train)
+X_test = scaler_X.transform(X_test)
+
+scaler_y = StandardScaler()
+y_train = scaler_y.fit_transform(y_train)
+y_test = scaler_y.transform(y_test)
+
+# Reshape input data to 3D for LSTM: (samples, timesteps, features)
+X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
+X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1]))
+
+# Define the hyperparameter tuning function
+def build_model(hp):
+    model = Sequential()
+    model.add(LSTM(units=hp.Int('units', min_value=32, max_value=256, step=32), input_shape=(1, 23), return_sequences=True))
+    model.add(Dropout(hp.Float('dropout_rate', min_value=0.0, max_value=0.5, step=0.1)))
+    model.add(LSTM(units=hp.Int('units2', min_value=32, max_value=256, step=32)))
+    model.add(Dropout(hp.Float('dropout_rate2', min_value=0.0, max_value=0.5, step=0.1)))
+    model.add(Dense(units=hp.Int('dense_units', min_value=32, max_value=256, step=32), activation='relu'))
+    model.add(Dense(15, activation='linear'))
+
+    # Compile the model
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
+    return model
+
+# Run the hyperparameter tuning
+tuner = kt.RandomSearch(
+    build_model,
+    objective='val_mae',
+    max_trials=10,
+    executions_per_trial=2,
+    directory='tuning_dir',
+    project_name='lstm_tuning'
+)
+
+tuner.search(X_train, y_train, epochs=100, validation_split=0.2, callbacks=[tf.keras.callbacks.EarlyStopping(patience=10)])
+
+# Get the optimal hyperparameters
+best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
+print(f"The optimal number of units in the first LSTM layer is {best_hps.get('units')}")
+print(f"The optimal dropout rate in the first layer is {best_hps.get('dropout_rate')}")
+print(f"The optimal number of units in the second LSTM layer is {best_hps.get('units2')}")
+print(f"The optimal dropout rate in the second layer is {best_hps.get('dropout_rate2')}")
+print(f"The optimal number of units in the dense layer is {best_hps.get('dense_units')}")
+
+# Build the model with the best hyperparameters
+model = tuner.hypermodel.build(best_hps)
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=100, validation_split=0.2, callbacks=[tf.keras.callbacks.EarlyStopping(patience=10)])
+
+# Evaluate the model
+loss, mae = model.evaluate(X_test, y_test)
+print(f"Test Loss: {loss}")
+print(f"Test MAE: {mae}")
+
+# Make predictions
+y_pred = model.predict(X_test)
+y_pred = scaler_y.inverse_transform(y_pred)  # Transform predictions back to original scale
+print(y_pred) I
