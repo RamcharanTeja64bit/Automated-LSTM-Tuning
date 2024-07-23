@@ -1,91 +1,53 @@
 
-
-# LSTM Model for Predicting Best 15 Output Parameter Combinations
-
-This project aims to build and tune an LSTM model to predict the best 15 output parameter combinations given 23 input parameters. The project uses Keras Tuner for hyperparameter optimization and TensorFlow for building and training the model.
-
-## Table of Contents
-
-- [Prerequisites](#prerequisites)
-- [Project Structure](#project-structure)
-- [Usage](#usage)
-- [Data Preparation](#data-preparation)
-- [Model Building and Tuning](#model-building-and-tuning)
-- [Training and Evaluation](#training-and-evaluation)
-- [Prediction](#prediction)
-- [Results](#results)
+# LSTM Model for Predicting Output Parameters
 
 ## Prerequisites
 
-Before running the code, ensure you have the following libraries installed:
-
+Ensure you have the following libraries installed:
 - pandas
 - scikit-learn
 - numpy
 - tensorflow
 - keras-tuner
 
-You can install the necessary libraries using the following command:
-
+Install them with:
 ```bash
 pip install pandas scikit-learn numpy tensorflow keras-tuner
 ```
 
-## Project Structure
-
-The project directory contains the following files:
-
-- `lstm_model.py`: The main script for loading data, preparing it, tuning hyperparameters, building the LSTM model, and making predictions.
-- `your_dataset.csv`: The dataset file (replace this with your actual data source).
-
 ## Usage
 
-1. **Clone the Repository**: Clone the repository to your local machine.
+1. **Clone the Repository**:
    ```bash
    git clone https://github.com/your-username/your-repository.git
    cd your-repository
    ```
 
-2. **Place Your Dataset**: Ensure your dataset is named `your_dataset.csv` and placed in the same directory as the `lstm_model.py` script.
+2. **Place Your Dataset**: Ensure your dataset is named `your_dataset.csv` and is in the same directory as the script.
 
-3. **Run the Script**: Execute the script to load data, prepare it, tune hyperparameters, build the LSTM model, and make predictions.
+3. **Run the Script**:
    ```bash
    python lstm_model.py
    ```
 
-## Data Preparation
+## Explanation
 
-The script loads the dataset and separates the first 23 columns as input features and the next 15 columns as output targets. The data is then split into training and testing sets, standardized, and reshaped to fit the LSTM model's input requirements.
-
-## Model Building and Tuning
-
-The script defines a function to build the LSTM model with tunable hyperparameters. Keras Tuner's `RandomSearch` is used to perform hyperparameter optimization, searching for the best configuration to minimize validation mean absolute error (MAE).
-
-## Training and Evaluation
-
-The script retrieves the best hyperparameters, builds the model, and trains it using the training data. Early stopping is employed to prevent overfitting. The model's performance is evaluated on the test set, and metrics such as loss and MAE are reported.
-
-## Prediction
-
-The trained model is used to make predictions on the test set. The predicted values are transformed back to the original scale for interpretation.
-
-## Results
-
-The script prints the test loss and MAE, along with the predicted output values. These predictions represent the best 15 output parameter combinations given the 23 input parameters.
+- **Data Preparation**: The script loads the dataset, separates input and output columns, splits the data into training and testing sets, and standardizes it.
+- **Model Building and Tuning**: Uses Keras Tuner to find the best hyperparameters for the LSTM model.
+- **Training and Evaluation**: Trains the model with the best hyperparameters and evaluates its performance.
+- **Prediction**: Makes predictions on the test set and prints the results.
 
 ## Example Output
 
 ```text
-The optimal number of units in the first LSTM layer is 128
-The optimal dropout rate in the first layer is 0.2
-The optimal number of units in the second LSTM layer is 64
-The optimal dropout rate in the second layer is 0.3
-The optimal number of units in the dense layer is 128
+Optimal hyperparameters found.
 Test Loss: 0.045
 Test MAE: 0.18
 [[output predictions]]
 ```
 
+Replace placeholders like the repository URL and dataset filename with actual values.
+
 ---
 
-Replace the placeholder values such as the repository URL and dataset filename with actual values corresponding to your project. This README file provides a comprehensive guide to understanding and running the LSTM model script.
+I
