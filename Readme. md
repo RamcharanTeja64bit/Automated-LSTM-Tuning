@@ -15,12 +15,6 @@ Install them with:
 pip install pandas scikit-learn numpy tensorflow keras-tuner
 ```
 
-## Usage
-
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/your-username/your-repository.git
-   cd your-repository
    ```
 
 2. **Place Your Dataset**: Ensure your dataset is named `your_dataset.csv` and is in the same directory as the script.
